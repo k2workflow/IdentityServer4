@@ -20,7 +20,6 @@ namespace IdentityServer.UnitTests.Services.Default
     {
         private DefaultIdentityServerInteractionService _subject;
 
-        private IdentityServerOptions _options = new IdentityServerOptions();
         private MockHttpContextAccessor _mockMockHttpContextAccessor;
         private MockMessageStore<LogoutNotificationContext> _mockEndSessionStore = new MockMessageStore<LogoutNotificationContext>();
         private MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
@@ -34,7 +33,7 @@ namespace IdentityServer.UnitTests.Services.Default
 
         public DefaultIdentityServerInteractionServiceTests()
         {
-            _mockMockHttpContextAccessor = new MockHttpContextAccessor(_options, _mockUserSession, _mockEndSessionStore);
+            _mockMockHttpContextAccessor = new MockHttpContextAccessor(TestIdentityServerOptions.CreateISnapshotOptions(), _mockUserSession, _mockEndSessionStore);
 
             _subject = new DefaultIdentityServerInteractionService(new StubClock(), 
                 _mockMockHttpContextAccessor,

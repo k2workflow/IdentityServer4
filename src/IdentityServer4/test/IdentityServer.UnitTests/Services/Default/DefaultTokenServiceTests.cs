@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -13,6 +13,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
@@ -35,6 +36,8 @@ namespace IdentityServer.UnitTests.Services.Default
 
             var svcs = new ServiceCollection();
             svcs.AddSingleton(_options);
+            svcs.AddScoped<IOptionsSnapshot<IdentityServerOptions>>(services => new MockIdentityServerOptions(TestIdentityServerOptions.CreateISnapshotOptions().Value));
+
             _httpContext.RequestServices = svcs.BuildServiceProvider();
 
             _subject = new DefaultTokenService(
