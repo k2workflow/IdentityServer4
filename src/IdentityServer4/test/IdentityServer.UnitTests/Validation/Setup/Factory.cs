@@ -246,7 +246,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             }
 
             var clients = CreateClientStore();
-            var context = new MockHttpContextAccessor(options);
+            var context = new MockHttpContextAccessor(new MockIdentityServerOptions(options));
             var logger = TestLogger.Create<TokenValidator>();
 
             var keyInfo = new SecurityKeyInfo

@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.UnitTests.Common
 {
@@ -16,6 +17,28 @@ namespace IdentityServer.UnitTests.Common
             };
 
             return options;
+        }
+
+        public static IOptionsSnapshot<IdentityServerOptions> CreateISnapshotOptions()
+        {
+            return new MockIdentityServerOptions(Create());
+        }
+    }
+
+    internal class MockIdentityServerOptions : IOptionsSnapshot<IdentityServerOptions>
+    {
+        internal readonly IdentityServerOptions _options;
+
+        public IdentityServerOptions Value => _options;
+
+        public MockIdentityServerOptions(IdentityServerOptions options)
+        {
+            _options = options;
+        }
+
+        public IdentityServerOptions Get(string name)
+        {
+            return _options;
         }
     }
 }

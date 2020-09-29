@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.IntegrationTests.Common
 {
@@ -122,6 +123,7 @@ namespace IdentityServer.IntegrationTests.Common
                 if (OnFederatedSignout != null) handler.OnFederatedSignout = OnFederatedSignout;
                 return handler;
             });
+            services.AddScoped<IOptionsSnapshot<IdentityServerOptions>>(services => new MockIdentityServerOptions(Options));
 
             services.AddIdentityServer(options =>
             {
@@ -147,6 +149,8 @@ namespace IdentityServer.IntegrationTests.Common
 
             services.AddHttpClient<JwtRequestUriHttpClient>()
                 .AddHttpMessageHandler(() => JwtRequestMessageHandler);
+
+            
 
             OnPostConfigureServices(services);
         }
@@ -452,6 +456,23 @@ namespace IdentityServer.IntegrationTests.Common
         public Task SignOutAsync(AuthenticationProperties properties)
         {
             return Task.CompletedTask;
+        }
+    }
+
+    internal class MockIdentityServerOptions : IOptionsSnapshot<IdentityServerOptions>
+    {
+        internal readonly IdentityServerOptions _options;
+
+        public IdentityServerOptions Value => _options;
+
+        public MockIdentityServerOptions(IdentityServerOptions options)
+        {
+            _options = options;
+        }
+
+        public IdentityServerOptions Get(string name)
+        {
+            return _options;
         }
     }
 }

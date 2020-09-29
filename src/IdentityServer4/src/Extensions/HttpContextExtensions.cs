@@ -12,6 +12,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 
 #pragma warning disable 1591
 
@@ -123,7 +124,7 @@ namespace IdentityServer4.Extensions
 
             // if they've explicitly configured a URI then use it,
             // otherwise dynamically calculate it
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            var options = context.RequestServices.GetRequiredService<IOptionsSnapshot<IdentityServerOptions>>().Value;
             var uri = options.IssuerUri;
             if (uri.IsMissing())
             {

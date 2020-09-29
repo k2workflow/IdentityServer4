@@ -9,6 +9,7 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.UnitTests.Common
 {
@@ -18,11 +19,11 @@ namespace IdentityServer.UnitTests.Common
         public MockAuthenticationService AuthenticationService { get; set; } = new MockAuthenticationService();
 
         public MockHttpContextAccessor(
-            IdentityServerOptions options = null,
+            IOptionsSnapshot<IdentityServerOptions> options = null,
             IUserSession userSession = null,
             IMessageStore<EndSession> endSessionStore = null)
         {
-            options = options ?? TestIdentityServerOptions.Create();
+            options ??= TestIdentityServerOptions.CreateISnapshotOptions();
 
             var services = new ServiceCollection();
             services.AddSingleton(options);
