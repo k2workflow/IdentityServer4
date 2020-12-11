@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -14,6 +14,9 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
@@ -22,6 +25,8 @@ namespace IdentityServer.UnitTests.Services.Default
     {
         private DefaultUserSession _subject;
         private MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
+        private DefaultHttpContext _httpContext = new DefaultHttpContext();
+
         private MockAuthenticationHandlerProvider _mockAuthenticationHandlerProvider = new MockAuthenticationHandlerProvider();
         private MockAuthenticationHandler _mockAuthenticationHandler = new MockAuthenticationHandler();
 
@@ -31,14 +36,28 @@ namespace IdentityServer.UnitTests.Services.Default
 
         public DefaultUserSessionTests()
         {
+            _options.IssuerUri = "https://test.identityserver.io";
+            _options.Authentication.CookieAuthenticationScheme = "cookie";
+
+            var authServices = new MockAuthenticationService { Result = AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(), "")) };
+
+            var svcs = new ServiceCollection();
+            svcs.AddSingleton(_options);
+            svcs.AddScoped<IOptionsSnapshot<IdentityServerOptions>>(services => new MockIdentityServerOptions(TestIdentityServerOptions.CreateISnapshotOptions().Value));
+            svcs.AddScoped<IAuthenticationService>(services => authServices);
+
             _mockAuthenticationHandlerProvider.Handler = _mockAuthenticationHandler;
+
+            _httpContext.RequestServices = svcs.BuildServiceProvider();
+
+            _mockHttpContext = new MockHttpContextAccessor() { HttpContext = _httpContext };
 
             _user = new IdentityServerUser("123").CreatePrincipal();
             _subject = new DefaultUserSession(
-                _mockHttpContext, 
+                _mockHttpContext,
                 _mockAuthenticationHandlerProvider,
                 _options,
-                new StubClock(), 
+                new StubClock(),
                 TestLogger.Create<DefaultUserSession>());
         }
 
