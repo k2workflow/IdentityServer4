@@ -1,8 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using IdentityServer4.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.UnitTests.Common
 {
@@ -16,6 +17,28 @@ namespace IdentityServer.UnitTests.Common
             };
 
             return options;
+        }
+
+        public static IOptionsSnapshot<IdentityServerOptions> CreateISnapshotOptions()
+        {
+            return new MockIdentityServerOptions(Create());
+        }
+    }
+
+    internal class MockIdentityServerOptions : IOptionsSnapshot<IdentityServerOptions>
+    {
+        internal readonly IdentityServerOptions _options;
+
+        public IdentityServerOptions Value => _options;
+
+        public MockIdentityServerOptions(IdentityServerOptions options)
+        {
+            _options = options;
+        }
+
+        public IdentityServerOptions Get(string name)
+        {
+            return _options;
         }
     }
 }
